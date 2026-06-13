@@ -75,10 +75,12 @@ useEffect(() => {
     setIsModeSyncing(true);
 
     try {
-      const endpoint =
-        mode === "demo" ? "/api/simulator/start" : "/api/simulator/stop";
-        console.log(`${API_BASE_URL}${endpoint}`);
-     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+     const endpoint =
+  mode === "demo"
+    ? "/api/simulator/start"
+    : "/api/simulator/stop";
+
+const response = await fetch(`${API_BASE_URL}${endpoint}`, {
   method: "POST",
 });
       if (!response.ok) {
@@ -103,7 +105,7 @@ useEffect(() => {
 
       try {
         const response = await fetch(
-  "/api/simulator/status"
+  `${API_BASE_URL}/api/simulator/status`
 );
         const status = (await response.json()) as {
           running: boolean;
