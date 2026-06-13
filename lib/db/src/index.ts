@@ -1,7 +1,12 @@
+import dotenv from "dotenv";
+import path from "path";
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import * as schema from "./schema";
-
+dotenv.config({
+  path: path.resolve(process.cwd(), "../../.env"),
+});
+console.log("DATABASE_URL exists:", !!process.env.DATABASE_URL);
 const { Pool } = pg;
 
 if (!process.env.DATABASE_URL) {

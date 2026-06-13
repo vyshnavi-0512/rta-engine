@@ -1,6 +1,8 @@
 import { db, eventsTable } from "@workspace/db";
 import { broadcastWsMessage } from "./ws";
 import { logger } from "./logger";
+let simulatorRunning = false;
+let simulatorTimeout: NodeJS.Timeout | null = null;
 
 const PAGES = ["/home", "/dashboard", "/profile", "/settings", "/pricing", "/docs", "/login", "/signup", "/features"];
 const FEATURES = ["Dashboard", "Event Ingestion", "Alerts", "API Explorer", "Export CSV", "User Segments"];
@@ -59,21 +61,55 @@ async function emitEvent(): Promise<void> {
 }
 
 export function startSimulator(): void {
+  if (simulatorRunning) {
+    logger.info("Simulator already running");
+    return;
+  }
+
+  simulatorRunning = true;
+
   const MIN_INTERVAL = 400;
   const MAX_INTERVAL = 1800;
 
   function scheduleNext(): void {
-    const delay = Math.floor(Math.random() * (MAX_INTERVAL - MIN_INTERVAL)) + MIN_INTERVAL;
-    setTimeout(async () => {
+    if (!simulatorRunning) {
+      return;
+    }
+
+    const delay =
+      Math.floor(Math.random() * (MAX_INTERVAL - MIN_INTERVAL)) +
+      MIN_INTERVAL;
+
+    simulatorTimeout = setTimeout(async () => {
       try {
         await emitEvent();
       } catch (err) {
         logger.error({ err }, "Simulator error");
       }
+
       scheduleNext();
     }, delay);
   }
 
   scheduleNext();
+
   logger.info("Event simulator started");
+}
+
+export function stopSimulator(): void {
+  simulatorRunning = false;
+
+  if (simulatorTimeout) {
+    clearTimeout(simulatorTimeout);
+    simulatorTimeout = null;
+  }
+
+  logger.info("Event simulator stopped");
+}
+
+export function isSimulatorRunning(): boolean {
+  return simulatorRunning;
+}
+export function getAnalyticsMode(): "demo" | "privacyguard" {
+  return isSimulatorRunning() ? "demo" : "privacyguard";
 }

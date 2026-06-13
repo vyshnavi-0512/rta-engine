@@ -10,13 +10,13 @@ export default function ApiPerformance() {
   });
 
   const sortedPerformance = performance ? [...performance].sort((a, b) => b.avgMs - a.avgMs) : [];
-
+console.log("performance =", JSON.stringify(performance, null, 2));
+console.log("type =", typeof performance);
   const getMsColorClass = (ms: number) => {
     if (ms > 1000) return 'text-destructive font-bold';
     if (ms > 500) return 'text-warning font-bold';
     return 'text-success';
   };
-
   return (
     <div className="flex-1 overflow-auto bg-background p-6">
       <div className="flex flex-col gap-2 mb-8">
@@ -55,7 +55,7 @@ export default function ApiPerformance() {
                   <TableRow key={i} className="border-border/50 hover:bg-muted/30">
                     <TableCell className="pl-6 font-mono text-sm text-foreground">{stat.endpoint}</TableCell>
                     <TableCell className="text-right text-muted-foreground">
-                      {stat.calls.toLocaleString()}
+                     {Number(stat.calls ?? 0).toLocaleString()}
                     </TableCell>
                     <TableCell className="text-right">
                       <span className={getMsColorClass(stat.avgMs)}>{Math.round(stat.avgMs)} ms</span>
@@ -65,7 +65,7 @@ export default function ApiPerformance() {
                     </TableCell>
                     <TableCell className="text-right pr-6">
                       <span className={stat.errorRate > 5 ? 'text-destructive font-bold' : stat.errorRate > 0 ? 'text-warning' : 'text-success'}>
-                        {stat.errorRate.toFixed(2)}%
+                        {Number(stat.errorRate ?? 0).toFixed(2)}%
                       </span>
                     </TableCell>
                   </TableRow>

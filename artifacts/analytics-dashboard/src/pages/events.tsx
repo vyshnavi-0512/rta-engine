@@ -5,13 +5,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
 export default function EventsFeed() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const ws = new WebSocket(protocol + '//' + window.location.host + '/ws');
+    const WS_URL = API_BASE_URL.replace(/^http/, "ws");
+
+const ws = new WebSocket(`${WS_URL}/ws`);
     
     ws.onmessage = () => {
       queryClient.invalidateQueries({ queryKey: getGetRecentEventsQueryKey() });
@@ -71,7 +74,7 @@ export default function EventsFeed() {
                   </TableCell>
                 </TableRow>
               ) : (
-                events.map((event) => (
+               (Array.isArray(events) ? events : []).map((event) => (
                   <TableRow key={event.id} className="border-border/50 hover:bg-muted/30 transition-colors font-mono text-sm">
                     <TableCell className="text-muted-foreground">
                       {format(new Date(event.timestamp), "MMM dd, HH:mm:ss.SSS")}
