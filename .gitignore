@@ -35,18 +35,19 @@ node_modules
 npm-debug.log
 yarn-error.log
 testem.log
+*.log
+*.err.log
 /typings
 
 # System Files
 .DS_Store
 Thumbs.db
-
-.cursor/rules/nx-rules.mdc
-.github/instructions/nx.instructions.md
-
-# Replit
+# Build & Environment Artifacts
 .cache/
 .local/
+.turbo
 
 .env
 .env.*
+
+
